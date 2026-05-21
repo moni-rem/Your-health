@@ -22,7 +22,6 @@ fun AppNavigation() {
             WelcomeScreen(navController)
         }
 
-
         composable("login") {
             LoginScreen(navController)
         }

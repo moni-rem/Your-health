@@ -91,7 +91,7 @@ fun WelcomeScreen(navController: NavController) {
                 lineHeight = 28.sp
             )
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(200.dp))
 
             // BUTTON
             Button(
@@ -99,6 +99,7 @@ fun WelcomeScreen(navController: NavController) {
                     navController.navigate("login")
                 },
                 modifier = Modifier
+                    .padding(vertical = 20.dp)
                     .fillMaxWidth()
                     .height(58.dp),
                 colors = ButtonDefaults.buttonColors(

@@ -1,5 +1,7 @@
 package com.example.health_remain_app.ui.screens
 
+
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,31 +22,33 @@ import androidx.compose.ui.graphics.Brush
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginScreenView() {
-    LoginScreen(
+fun RegisterScreenView() {
+    RegisterScreen(
         navController = rememberNavController()
     )
 }
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun RegisterScreen(navController: NavController) {
 
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFFCDDAEA),
-                                Color(0xFF9BB7DA)
-                            )
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFFCDDAEA),
+                        Color(0xFF9BB7DA)
+                    )
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
 
         Column(
             modifier = Modifier
@@ -74,7 +78,19 @@ fun LoginScreen(navController: NavController) {
                 color = Color.Gray
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                singleLine = true
+            )
+
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = email,
@@ -97,7 +113,20 @@ fun LoginScreen(navController: NavController) {
                 visualTransformation = PasswordVisualTransformation()
             )
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text("Confirm Password") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation()
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
@@ -112,7 +141,7 @@ fun LoginScreen(navController: NavController) {
                 )
             ) {
                 Text(
-                    text = "Login",
+                    text = "Register",
                     fontSize = 18.sp,
                     color = Color.White
                 )
@@ -120,11 +149,39 @@ fun LoginScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            TextButton(onClick = {}) {
-                Text(
-                    text = "Forgot Password?",
-                    color = Color(0xFF4A90E2)
-                )
+            //forget password and already have account
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TextButton(
+                    onClick = {},
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Text(
+                        text = "Forgot Password?",
+                        color = Color(0xFF4A90E2)
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = "Already have an account?",
+                        color = Color.Black
+                    )
+
+                    TextButton(
+                        onClick = {},
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text(
+                            text = "Login",
+                            color = Color(0xFF4A90E2)
+                        )
+                    }
+                }
             }
         }
     }
