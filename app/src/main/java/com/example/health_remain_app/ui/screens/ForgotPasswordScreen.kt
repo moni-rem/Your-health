@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,21 +14,20 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.health_remain_app.viewmodel.HealthViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun WaterScreen(
-    navController: NavController,
-    viewModel: HealthViewModel
+fun ForgotPasswordScreen(
+    navController: NavController
 ) {
 
     val context = LocalContext.current
+    val auth = FirebaseAuth.getInstance()
 
-    var waterGoal by remember {
+    var email by remember {
         mutableStateOf("")
     }
 
@@ -74,17 +70,8 @@ fun WaterScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    Icon(
-                        imageVector = Icons.Default.WaterDrop,
-                        contentDescription = null,
-                        tint = Color(0xFF7DB9DE),
-                        modifier = Modifier.size(80.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
                     Text(
-                        text = "Daily Water Goal",
+                        text = "Forgot Password",
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         color = MainTextColor
@@ -93,7 +80,7 @@ fun WaterScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = "Set how much water you want to drink today",
+                        text = "Enter your email to receive a password reset link",
                         fontSize = 15.sp,
                         color = MainTextColor.copy(alpha = 0.7f)
                     )
@@ -101,25 +88,16 @@ fun WaterScreen(
                     Spacer(modifier = Modifier.height(30.dp))
 
                     OutlinedTextField(
-                        value = waterGoal,
+                        value = email,
                         onValueChange = {
-                            waterGoal = it
+                            email = it
                         },
                         label = {
                             Text(
-                                text = "Enter goal in ml",
+                                text = "Email Address",
                                 color = MainTextColor
                             )
                         },
-                        placeholder = {
-                            Text(
-                                text = "2000",
-                                color = MainTextColor.copy(alpha = 0.5f)
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number
-                        ),
                         singleLine = true,
                         shape = RoundedCornerShape(18.dp),
                         modifier = Modifier.fillMaxWidth(),
@@ -132,36 +110,32 @@ fun WaterScreen(
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
                     Button(
                         onClick = {
 
-                            if (waterGoal.isNotEmpty()) {
+                            auth.sendPasswordResetEmail(email)
+                                .addOnCompleteListener { task ->
 
-                                viewModel.setWaterGoal(
-                                    waterGoal.toInt()
-                                )
+                                    if (task.isSuccessful) {
 
-                                Toast.makeText(
-                                    context,
-                                    "Water goal saved",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                        Toast.makeText(
+                                            context,
+                                            "Reset email sent",
+                                            Toast.LENGTH_LONG
+                                        ).show()
 
-                                // Navigate to home and clear backstack to ensure we land on Home
-                                navController.navigate("home") {
-                                    popUpTo("home") { inclusive = true }
+                                    } else {
+
+                                        Toast.makeText(
+                                            context,
+                                            task.exception?.message,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
                                 }
 
-                            } else {
-
-                                Toast.makeText(
-                                    context,
-                                    "Please enter your goal",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -173,20 +147,12 @@ fun WaterScreen(
                     ) {
 
                         Text(
-                            text = "Save Goal",
+                            text = "Send Reset Email",
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             color = MainTextColor
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Text(
-                        text = "Recommended: 2000ml - 3000ml daily",
-                        fontSize = 14.sp,
-                        color = MainTextColor.copy(alpha = 0.6f)
-                    )
                 }
             }
         }

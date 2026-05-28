@@ -1,37 +1,68 @@
 package com.example.health_remain_app.viewmodel
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.health_remain_app.data.model.Meal
-
+import com.example.health_remain_app.data.model.WaterRecord
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HealthViewModel : ViewModel() {
 
-    var waterIntake by mutableStateOf(0)
+    var cups by mutableIntStateOf(0)
         private set
 
-    val dailyGoal = 2000
+    private var _waterGoal by mutableIntStateOf(2000)
+    val waterGoal: Int get() = _waterGoal
 
-    val meals = mutableStateListOf(
-        Meal("Breakfast", false),
-        Meal("Lunch", false),
-        Meal("Dinner", false)
-    )
+    var history = mutableStateListOf<WaterRecord>()
+        private set
 
-    fun addWater(amount: Int) {
-        waterIntake += amount
+    fun setWaterGoal(goal: Int) {
+        _waterGoal = goal
     }
 
-    fun toggleMeal(index: Int) {
-        meals[index] = meals[index].copy(
-            completed = !meals[index].completed
+    fun drinkWater() {
+
+        cups++
+
+        val currentDate =
+            SimpleDateFormat(
+                "dd MMM yyyy",
+                Locale.getDefault()
+            ).format(Date())
+
+        history.add(
+            WaterRecord(
+                date = currentDate,
+                amount = 250
+            )
         )
     }
 
-    fun getProgress(): Float {
-        return waterIntake.toFloat() / dailyGoal.toFloat()
+    fun getTodayTotal(): Int {
+
+        val today =
+            SimpleDateFormat(
+                "dd MMM yyyy",
+                Locale.getDefault()
+            ).format(Date())
+
+        return history
+            .filter { it.date == today }
+            .sumOf { it.amount }
+    }
+
+    fun getWeeklyTotal(): Int {
+
+        return history.sumOf { it.amount }
+    }
+
+    fun getMonthlyTotal(): Int {
+
+        return history.sumOf { it.amount }
     }
 }
