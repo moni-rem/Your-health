@@ -1,33 +1,36 @@
-package com.example.health_remain_app.data.firebase
+package com.example.health_remain_app.firebase
 
-import com.example.health_remain_app.data.model.WaterRecord
-import com.google.firebase.database.FirebaseDatabase
+import com.example.health_remain_app.data.model.UserProfile
+import com.google.firebase.firestore.FirebaseFirestore
 
-object RealtimeDatabaseManager {
+object FirestoreManager {
+    private val db = FirebaseFirestore.getInstance()
 
-    private val db =
-        FirebaseDatabase.getInstance().reference
-
-    fun saveWaterGoal(
-        userId: String,
-        goal: Int
-    ) {
-
-        db.child("users")
-            .child(userId)
-            .child("waterGoal")
-            .setValue(goal)
+    fun saveUserProfile(userId: String, profile: UserProfile) {
+        db.collection("users").document(userId).set(profile)
     }
 
-    fun saveWaterRecord(
-        userId: String,
-        record: WaterRecord
-    ) {
+    fun getUserProfile(userId: String, onResult: (UserProfile?) -> Unit) {
+        db.collection("users").document(userId).get()
+            .addOnSuccessListener { document ->
+                onResult(document.toObject(UserProfile::class.java))
+            }
+            .addOnFailureListener {
+                onResult(null)
+            }
+    }
 
-        db.child("users")
-            .child(userId)
-            .child("history")
-            .push()
-            .setValue(record)
+    fun updateStreak(userId: String, current: Int, best: Int, lastReachedDate: String) {
+        db.collection("users").document(userId).update(
+            mapOf(
+                "currentStreak" to current,
+                "bestStreak" to best,
+                "lastGoalReachedDate" to lastReachedDate
+            )
+        )
+    }
+
+    fun updateAchievements(userId: String, achievements: List<String>) {
+        db.collection("users").document(userId).update("achievements", achievements)
     }
 }

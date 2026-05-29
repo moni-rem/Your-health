@@ -1,0 +1,47 @@
+# Health Remain App - Project Overview
+
+## 1. Project Summary
+Health Remain App is an Android application designed to help users track their daily water intake and manage their health metrics (Weight, Height, BMI). It features a streak system to encourage daily consistency and a profile management system with cloud storage.
+
+## 2. Tech Stack & Libraries Used
+- **Language**: Kotlin
+- **UI Framework**: Jetpack Compose (Modern declarative UI)
+- **Architecture**: MVVM (Model-View-ViewModel)
+- **Backend Services (Firebase)**:
+    - **Firebase Authentication**: For user login and security.
+    - **Firebase Realtime Database**: For storing user profiles, water intake history, and streaks (Region: asia-southeast1).
+    - **Firebase Storage**: For uploading and hosting user profile pictures.
+- **Image Loading**: Coil (Compose-friendly image loading for profile pictures).
+- **Asynchronous Tasks**: Kotlin Coroutines & Flow.
+- **Local Storage**: SharedPreferences (for simple settings like water goals and dark mode).
+- **Notifications**: WorkManager & AlarmManager (used for hydration reminders).
+
+## 3. Core Features & Functionality
+
+### A. Profile & Health Management
+- Users can set their name, weight, and height.
+- **BMI Calculation**: The app automatically calculates BMI based on weight and height.
+- **Dynamic Water Goals**: The app calculates a recommended daily water goal based on the user's gender, weight, and activity level.
+- **Profile Picture**: Users can pick an image from their gallery, which is then uploaded to Firebase Storage and synced across sessions.
+
+### B. Water Tracking & Streaks
+- Users log water consumption throughout the day.
+- **Realtime Sync**: Data is saved to the Firebase Realtime Database to prevent data loss.
+- **Streak System**: Tracks how many consecutive days the user has met their water goal. It automatically resets if a day is missed.
+
+### C. UI & Experience
+- **Dark Mode Support**: Users can toggle between light and dark themes.
+- **Responsive Design**: Uses modern Compose components like `Card`, `AsyncImage`, and `Brush` for a professional look.
+- **Navigation**: Uses `androidx.navigation` for seamless transitions between screens (Profile, Reminders, etc.).
+
+## 4. Database Structure (Firebase Realtime Database)
+The data is organized by `userId` to ensure privacy:
+- `users/{userId}/profile`: Contains Name, BMI, Streaks, and Profile Picture URL.
+- `users/{userId}/history`: A list of timestamped water intake records.
+- `users/{userId}/waterGoal`: The current daily target.
+
+## 5. Deployment & Configuration
+- **Package Name**: `com.example.health_remain_app`
+- **Minimum SDK**: 24 (Android 7.0)
+- **Target SDK**: 35 (Android 15)
+- **Configuration**: Uses `google-services.json` for Firebase integration.

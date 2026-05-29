@@ -20,9 +20,8 @@
 
         <!-- Reminder Receiver -->
         <receiver
-            android:name=".notification.ReminderReceiver"
-            android:exported="false"
-            tools:ignore="MissingClass" />
+            android:name=".notification.WaterReminderReceiver"
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity"

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <!-- Left Icon: Light grey circle with blue drop -->
+        <FrameLayout
+            android:id="@+id/notif_icon_container"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/circle_grey_bg"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/notif_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/waterdrop" />
+        </FrameLayout>
+
+        <!-- Center Text -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/notif_icon_container"
+            android:layout_toStartOf="@+id/progress_container"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical"
+            android:layout_centerVertical="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stay Hydrated!"
+                android:textColor="#1C1C1E"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/notif_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Drink 1 glass of water"
+                android:textColor="#8E8E93"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- Right: Progress Circle -->
+        <FrameLayout
+            android:id="@+id/progress_container"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true">
+
+            <ProgressBar
+                android:id="@+id/notif_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="75"
+                android:progressDrawable="@drawable/circular_progress" />
+
+            <TextView
+                android:id="@+id/notif_progress_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="75%"
+                android:textColor="#1C1C1E"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+    </RelativeLayout>
+
+    <!-- Bottom Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btn_done"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Done"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:background="@drawable/btn_done_bg"
+            android:layout_marginEnd="6dp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/btn_later"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Remind me later"
+            android:gravity="center"
+            android:textColor="#3A3A3C"
+            android:textSize="16sp"
+            android:background="@drawable/btn_later_bg"
+            android:layout_marginStart="6dp"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
+</LinearLayout>
