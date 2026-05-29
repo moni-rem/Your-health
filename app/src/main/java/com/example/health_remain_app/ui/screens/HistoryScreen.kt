@@ -4,22 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalDrink
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,238 +25,460 @@ fun WaterHistoryScreen(
     viewModel: HealthViewModel
 ) {
 
-    var selectedTab by remember {
-        mutableIntStateOf(0)
-    }
+    val blue1 = Color(0xFF00C6FB)
+    val blue2 = Color(0xFF005BEA)
 
-    val history = viewModel.history
+    val weeklyAverage =
+        viewModel.getAverageWeekly()
 
-    val todayTotal = viewModel.getTodayTotal()
-    val weeklyTotal = viewModel.getWeeklyTotal()
-    val monthlyTotal = viewModel.getMonthlyTotal()
+    val monthlyAverage =
+        viewModel.getAverageMonthly()
+
+    val goalPercent =
+        viewModel.getGoalCompletionPercent()
+
+    val values =
+        viewModel.getLast7DaysPercentages()
+
+    val days =
+        listOf(
+            "Mo",
+            "Tu",
+            "We",
+            "Th",
+            "Fr",
+            "Sa",
+            "Su"
+        )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F9FC))
+            .background(
+                Color(0xFFF5F7FF)
+            )
     ) {
 
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 30.dp)
+                .padding(20.dp),
+            verticalArrangement =
+                Arrangement.spacedBy(20.dp)
         ) {
 
-            Spacer(modifier = Modifier.height(12.dp))
+            item {
 
-            Text(
-                text = "Water History 💧",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFF4B5563)
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = "Track your hydration activity",
-                fontSize = 15.sp,
-                color = Color(0xFF9CA3AF)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-
-                FilterChip(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    label = {
-                        Text(
-                            "Today",
-                            color = if (selectedTab == 0)
-                                Color.White
-                            else
-                                Color(0xFF6B7280)
-                        )
-                    },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF1565C0),
-                        containerColor = Color.White
-                    ),
-                    shape = RoundedCornerShape(50.dp)
+                Spacer(
+                    modifier = Modifier.height(20.dp)
                 )
 
-                FilterChip(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    label = {
-                        Text(
-                            "Weekly",
-                            color = if (selectedTab == 1)
-                                Color.White
-                            else
-                                Color(0xFF6B7280)
-                        )
-                    },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF1565C0),
-                        containerColor = Color.White
-                    ),
-                    shape = RoundedCornerShape(50.dp)
-                )
-
-                FilterChip(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
-                    label = {
-                        Text(
-                            "Monthly",
-                            color = if (selectedTab == 2)
-                                Color.White
-                            else
-                                Color(0xFF6B7280)
-                        )
-                    },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF1565C0),
-                        containerColor = Color.White
-                    ),
-                    shape = RoundedCornerShape(50.dp)
+                Text(
+                    text = "Statistics",
+                    color = Color(0xFF4F46E5),
+                    fontSize = 34.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(28.dp))
+            // =========================
+            // CHART CARD
+            // =========================
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFBFDDF0)
-                ),
-                shape = RoundedCornerShape(80.dp),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 8.dp
-                )
-            ) {
+            item {
 
-                Column(
-                    modifier = Modifier.padding(32.dp)
-                ) {
-
-                    Text(
-                        text = when (selectedTab) {
-                            0 -> "Today's Intake"
-                            1 -> "Weekly Intake"
-                            else -> "Monthly Intake"
-                        },
-                        color = Color(0xFF6B7280),
-                        fontSize = 16.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = when (selectedTab) {
-                            0 -> "${todayTotal}ml"
-                            1 -> "${weeklyTotal}ml"
-                            else -> "${monthlyTotal}ml"
-                        },
-                        color = Color(0xFF1565C0),
-                        fontSize = 42.sp,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(26.dp))
-
-            Text(
-                text = "Recent Activity",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF4B5563)
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-
-                items(history.reversed()) { item ->
-
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(100.dp),
-                        elevation = CardDefaults.cardElevation(
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(30.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    elevation =
+                        CardDefaults.cardElevation(
                             defaultElevation = 4.dp
                         )
+                ) {
+
+                    Column(
+                        modifier = Modifier.padding(24.dp)
                     ) {
+
+                        Text(
+                            text = "Weekly Progress",
+                            color = Color(0xFF1F2937),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 22.sp
+                        )
+
+                        Spacer(
+                            modifier = Modifier.height(30.dp)
+                        )
 
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(
-                                    horizontal = 18.dp,
-                                    vertical = 16.dp
-                                ),
-                            verticalAlignment = Alignment.CenterVertically
+                                .height(180.dp),
+                            horizontalArrangement =
+                                Arrangement.SpaceEvenly,
+                            verticalAlignment =
+                                Alignment.Bottom
                         ) {
 
-                            Box(
-                                modifier = Modifier
-                                    .size(56.dp)
-                                    .background(
-                                        Color(0xFFE3F2FD),
-                                        RoundedCornerShape(50.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-
-                                Icon(
-                                    imageVector = Icons.Default.LocalDrink,
-                                    contentDescription = null,
-                                    tint = Color(0xFF1565C0)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(16.dp))
-
-                            Column(
-                                modifier = Modifier.weight(1f)
-                            ) {
+                            if (values.isEmpty()) {
 
                                 Text(
-                                    text = item.date,
-                                    color = Color(0xFF374151),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
+                                    text = "No hydration data yet",
+                                    color = Color.Gray
                                 )
 
-                                Spacer(modifier = Modifier.height(4.dp))
+                            } else {
 
-                                Text(
-                                    text = "Water intake recorded",
-                                    color = Color(0xFF9CA3AF),
-                                    fontSize = 13.sp
-                                )
+                                values.forEach { value ->
+
+                                    Column(
+                                        horizontalAlignment =
+                                            Alignment.CenterHorizontally
+                                    ) {
+
+                                        Box(
+                                            modifier = Modifier
+                                                .width(24.dp)
+                                                .height(
+                                                    value.dp
+                                                )
+                                                .clip(
+                                                    RoundedCornerShape(
+                                                        topStart = 12.dp,
+                                                        topEnd = 12.dp
+                                                    )
+                                                )
+                                                .background(
+                                                    brush =
+                                                        Brush.verticalGradient(
+                                                            listOf(
+                                                                blue1,
+                                                                blue2
+                                                            )
+                                                        )
+                                                )
+                                        )
+
+                                        Spacer(
+                                            modifier =
+                                                Modifier.height(8.dp)
+                                        )
+
+                                        Text(
+                                            text =
+                                                "${value}%",
+                                            fontSize = 12.sp,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                }
                             }
-
-                            Text(
-                                text = "${item.amount}ml",
-                                color = Color(0xFF1565C0),
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 18.sp
-                            )
                         }
                     }
                 }
             }
+
+            // =========================
+            // DAILY GOALS
+            // =========================
+
+            item {
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(30.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    )
+                ) {
+
+                    Column(
+                        modifier = Modifier.padding(24.dp)
+                    ) {
+
+                        Text(
+                            text = "Daily Goals",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1F2937)
+                        )
+
+                        Spacer(
+                            modifier = Modifier.height(24.dp)
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement =
+                                Arrangement.SpaceBetween
+                        ) {
+
+                            days.forEachIndexed { index, day ->
+
+                                Column(
+                                    horizontalAlignment =
+                                        Alignment.CenterHorizontally
+                                ) {
+
+                                    Box(
+                                        modifier = Modifier
+                                            .size(42.dp)
+                                            .clip(
+                                                CircleShape
+                                            )
+                                            .background(
+
+                                                if (index < 5)
+                                                    blue2
+                                                else
+                                                    Color(
+                                                        0xFFE5E7EB
+                                                    )
+                                            ),
+                                        contentAlignment =
+                                            Alignment.Center
+                                    ) {
+
+                                        Icon(
+                                            imageVector =
+                                                Icons.Default.LocalDrink,
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier =
+                                                Modifier.size(
+                                                    20.dp
+                                                )
+                                        )
+                                    }
+
+                                    Spacer(
+                                        modifier =
+                                            Modifier.height(8.dp)
+                                    )
+
+                                    Text(
+                                        text = day,
+                                        fontSize = 13.sp,
+                                        color =
+                                            if (index < 5)
+                                                blue2
+                                            else
+                                                Color.Gray
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // =========================
+            // ANALYTICS CARDS
+            // =========================
+
+            item {
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement =
+                        Arrangement.spacedBy(14.dp)
+                ) {
+
+                    AnalyticsCard(
+                        title = "Avg/Week",
+                        value =
+                            "${weeklyAverage}ml/day",
+                        modifier =
+                            Modifier.weight(1f)
+                    )
+
+                    AnalyticsCard(
+                        title = "Avg/Month",
+                        value =
+                            "${monthlyAverage}ml/day",
+                        modifier =
+                            Modifier.weight(1f)
+                    )
+
+                    AnalyticsCard(
+                        title = "Goals Done",
+                        value =
+                            "${goalPercent}%",
+                        modifier =
+                            Modifier.weight(1f)
+                    )
+                }
+            }
+
+            // =========================
+            // RECENT ACTIVITY
+            // =========================
+
+            item {
+
+                Text(
+                    text = "Recent Activity",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1F2937)
+                )
+            }
+
+            items(
+                viewModel.history.reversed()
+            ) { item ->
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    elevation =
+                        CardDefaults.cardElevation(
+                            defaultElevation = 3.dp
+                        )
+                ) {
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(18.dp),
+                        verticalAlignment =
+                            Alignment.CenterVertically
+                    ) {
+
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    Color(0xFFE0F2FE)
+                                ),
+                            contentAlignment =
+                                Alignment.Center
+                        ) {
+
+                            Icon(
+                                imageVector =
+                                    Icons.Default.LocalDrink,
+                                contentDescription = null,
+                                tint = blue2
+                            )
+                        }
+
+                        Spacer(
+                            modifier = Modifier.width(16.dp)
+                        )
+
+                        Column(
+                            modifier =
+                                Modifier.weight(1f)
+                        ) {
+
+                            Text(
+                                text = item.date,
+                                fontWeight =
+                                    FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color =
+                                    Color(0xFF1F2937)
+                            )
+
+                            Spacer(
+                                modifier =
+                                    Modifier.height(4.dp)
+                            )
+
+                            Text(
+                                text = item.time,
+                                color = Color.Gray,
+                                fontSize = 13.sp
+                            )
+                        }
+
+                        Text(
+                            text =
+                                "${item.amount}ml",
+                            color = blue2,
+                            fontWeight =
+                                FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                    }
+                }
+            }
+
+            item {
+
+                Spacer(
+                    modifier = Modifier.height(100.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AnalyticsCard(
+    title: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+
+    val blue1 = Color(0xFF00C6FB)
+    val blue2 = Color(0xFF005BEA)
+
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(26.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation =
+            CardDefaults.cardElevation(
+                defaultElevation = 4.dp
+            )
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush =
+                        Brush.verticalGradient(
+                            listOf(
+                                blue1.copy(alpha = 0.15f),
+                                blue2.copy(alpha = 0.25f)
+                            )
+                        )
+                )
+                .padding(20.dp),
+            horizontalAlignment =
+                Alignment.CenterHorizontally
+        ) {
+
+            Text(
+                text = title,
+                color = Color(0xFF1F2937),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(
+                modifier = Modifier.height(18.dp)
+            )
+
+            Text(
+                text = value,
+                color = blue2,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 18.sp
+            )
         }
     }
 }

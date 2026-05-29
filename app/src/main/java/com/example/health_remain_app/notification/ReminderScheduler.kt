@@ -9,30 +9,44 @@ object ReminderScheduler {
 
     fun scheduleReminder(
         context: Context,
-        minutes: Int
+        intervalMinutes: Int,
+        amount: Int
     ) {
 
-        val alarmManager =
-            context.getSystemService(Context.ALARM_SERVICE)
-                    as AlarmManager
-
         val intent =
-            Intent(context, ReminderReceiver::class.java)
+            Intent(
+                context,
+                WaterReminderReceiver::class.java
+            ).apply {
 
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            100,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+                putExtra(
+                    "amount",
+                    amount
+                )
+            }
+
+        val pendingIntent =
+            PendingIntent.getBroadcast(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or
+                        PendingIntent.FLAG_IMMUTABLE
+            )
+
+        val alarmManager =
+            context.getSystemService(
+                Context.ALARM_SERVICE
+            ) as AlarmManager
 
         val triggerTime =
-            System.currentTimeMillis() + (minutes * 60 * 1000)
+            System.currentTimeMillis() +
+                    intervalMinutes * 60 * 1000
 
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             triggerTime,
-            (minutes * 60 * 1000).toLong(),
+            intervalMinutes * 60 * 1000L,
             pendingIntent
         )
     }

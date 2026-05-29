@@ -42,18 +42,16 @@ class NotificationWorker(
         val intent = Intent(
             applicationContext,
             MainActivity::class.java
-        )
-
-        intent.flags =
-            Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+        ).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
 
         val pendingIntent =
             PendingIntent.getActivity(
                 applicationContext,
                 0,
                 intent,
-                PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
 
         val notification =
@@ -61,17 +59,12 @@ class NotificationWorker(
                 applicationContext,
                 channelId
             )
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Water Reminder")
-                .setContentText("Tap to record your water intake")
+                .setSmallIcon(R.mipmap.ic_launcher) // Changed to mipmap for better visibility
+                .setContentTitle("Water Reminder 💧")
+                .setContentText("Time to stay hydrated! Tap to record your water intake.")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
-                .addAction(
-                    R.drawable.ic_launcher_foreground,
-                    "I Drank Water",
-                    pendingIntent
-                )
                 .build()
 
         notificationManager.notify(

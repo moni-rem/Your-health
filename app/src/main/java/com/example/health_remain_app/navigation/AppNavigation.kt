@@ -4,13 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -18,11 +15,17 @@ import androidx.navigation.compose.rememberNavController
 import com.example.health_remain_app.viewmodel.HealthViewModel
 import com.example.health_remain_app.ui.screens.*
 import com.example.health_remain_app.ui.components.BottomNavigation
-
+import com.google.firebase.auth.FirebaseAuth
+import com.example.health_remain_app.viewmodel.ThemeViewModel
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
     val viewModel: HealthViewModel = viewModel()
+    val themeViewModel: ThemeViewModel = viewModel()
+    
+    // Check if user is already logged in
+    val auth = FirebaseAuth.getInstance()
+    val startDestination = if (auth.currentUser != null) "home" else "welcome"
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -50,7 +53,7 @@ fun AppNavigation() {
 
             NavHost(
                 navController = navController,
-                startDestination = "welcome",
+                startDestination = startDestination,
                 modifier = Modifier.fillMaxSize()
             ) {
 
@@ -80,7 +83,10 @@ fun AppNavigation() {
                 }
 
                 composable("profile") {
-                    ProfileScreen(navController)
+                    ProfileScreen(
+                        navController = navController,
+                        themeViewModel = themeViewModel
+                    )
                 }
 
                 composable("reminder") {

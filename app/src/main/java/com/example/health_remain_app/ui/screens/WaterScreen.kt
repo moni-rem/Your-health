@@ -4,24 +4,29 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.compose.ui.platform.LocalContext
 import com.example.health_remain_app.viewmodel.HealthViewModel
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import com.example.health_remain_app.notification.ReminderScheduler
 
 @Composable
 fun WaterScreen(
@@ -35,7 +40,30 @@ fun WaterScreen(
         mutableStateOf("")
     }
 
-    val MainTextColor = Color(0xFF1E293B)
+    val drinkOptions =
+        listOf(
+            150,
+            200,
+            250,
+            330,
+            450,
+            550
+        )
+
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    var selectedDrinkAmount by remember {
+        mutableIntStateOf(
+            viewModel.defaultDrinkAmount
+        )
+    }
+
+    val blue1 = Color(0xFF00C6FB)
+    val blue2 = Color(0xFF005BEA)
+
+    val darkText = Color(0xFF1F2937)
 
     Box(
         modifier = Modifier
@@ -43,8 +71,8 @@ fun WaterScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFFF5F9FC),
-                        Color(0xFFBFDDF0)
+                        Color(0xFFF5FBFF),
+                        Color(0xFFEAF6FF)
                     )
                 )
             )
@@ -54,16 +82,110 @@ fun WaterScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            // =========================
+            // TOP HEADER
+            // =========================
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(320.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                blue1,
+                                blue2
+                            )
+                        ),
+                        shape = RoundedCornerShape(
+                            bottomStart = 40.dp,
+                            bottomEnd = 40.dp
+                        )
+                    )
+            ) {
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        IconButton(
+                            onClick = {
+                                navController.popBackStack()
+                            }
+                        ) {
+
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .size(130.dp)
+                            .clip(CircleShape)
+                            .background(
+                                Color.White.copy(alpha = 0.15f)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+
+                        Icon(
+                            imageVector = Icons.Default.WaterDrop,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(70.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Text(
+                        text = "Daily Water Goal",
+                        color = Color.White,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = "Stay hydrated everyday",
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 16.sp
+                    )
+                }
+            }
+
+            // =========================
+            // CONTENT CARD
+            // =========================
+
             Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(30.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .offset(y = (-40).dp),
+                shape = RoundedCornerShape(32.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.White.copy(alpha = 0.35f)
+                    containerColor = Color.White
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 8.dp
                 )
             ) {
 
@@ -74,65 +196,124 @@ fun WaterScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    Icon(
-                        imageVector = Icons.Default.WaterDrop,
-                        contentDescription = null,
-                        tint = Color(0xFF7DB9DE),
-                        modifier = Modifier.size(80.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
                     Text(
-                        text = "Daily Water Goal",
-                        fontSize = 30.sp,
+                        text = "Set Your Goal",
+                        fontSize = 26.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MainTextColor
+                        color = darkText
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = "Set how much water you want to drink today",
-                        fontSize = 15.sp,
-                        color = MainTextColor.copy(alpha = 0.7f)
+                        text = "Recommended 2000ml - 3000ml daily",
+                        color = Color.Gray,
+                        fontSize = 15.sp
                     )
 
                     Spacer(modifier = Modifier.height(30.dp))
+
+                    // INPUT FIELD
 
                     OutlinedTextField(
                         value = waterGoal,
                         onValueChange = {
                             waterGoal = it
                         },
-                        label = {
-                            Text(
-                                text = "Enter goal in ml",
-                                color = MainTextColor
-                            )
-                        },
-                        placeholder = {
-                            Text(
-                                text = "2000",
-                                color = MainTextColor.copy(alpha = 0.5f)
-                            )
-                        },
+                        singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number
                         ),
-                        singleLine = true,
-                        shape = RoundedCornerShape(18.dp),
                         modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        placeholder = {
+
+                            Text(
+                                text = "Enter water goal",
+                                color = Color.Gray
+                            )
+                        },
+                        leadingIcon = {
+
+                            Icon(
+                                imageVector = Icons.Default.WaterDrop,
+                                contentDescription = null,
+                                tint = blue2
+                            )
+                        },
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF7DB9DE),
-                            unfocusedBorderColor = Color(0xFF7DB9DE),
-                            focusedTextColor = MainTextColor,
-                            unfocusedTextColor = MainTextColor,
-                            cursorColor = MainTextColor
+                            focusedBorderColor = blue2,
+                            unfocusedBorderColor = Color(0xFFE5E7EB),
+                            focusedTextColor = darkText,
+                            unfocusedTextColor = darkText,
+                            cursorColor = blue2
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Text(
+                        text = "Default Drink Amount",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = darkText,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+
+                        OutlinedButton(
+                            onClick = {
+                                expanded = true
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(58.dp),
+                            shape = RoundedCornerShape(20.dp)
+                        ) {
+
+                            Text(
+                                text = "$selectedDrinkAmount ml",
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = null
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = {
+                                expanded = false
+                            }
+                        ) {
+
+                            drinkOptions.forEach { amount ->
+
+                                DropdownMenuItem(
+                                    text = {
+                                        Text("$amount ml")
+                                    },
+                                    onClick = {
+
+                                        selectedDrinkAmount = amount
+
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(35.dp))
+
+                    // SAVE BUTTON
 
                     Button(
                         onClick = {
@@ -143,49 +324,57 @@ fun WaterScreen(
                                     waterGoal.toInt()
                                 )
 
+                                viewModel.setDefaultDrinkAmount(
+                                    selectedDrinkAmount
+                                )
+
+                                // Start reminder notification
+
+                                ReminderScheduler.scheduleReminder(
+                                    context = context,
+                                    intervalMinutes = 60, // change later to user selection
+                                    amount = selectedDrinkAmount
+                                )
+
+                                viewModel.saveGoalToFirestore()
+
                                 Toast.makeText(
                                     context,
-                                    "Water goal saved",
-                                    Toast.LENGTH_LONG
+                                    "Goal Saved",
+                                    Toast.LENGTH_SHORT
                                 ).show()
 
-                                // Navigate to home and clear backstack to ensure we land on Home
                                 navController.navigate("home") {
-                                    popUpTo("home") { inclusive = true }
+
+                                    popUpTo("home") {
+                                        inclusive = true
+                                    }
                                 }
-
-                            } else {
-
-                                Toast.makeText(
-                                    context,
-                                    "Please enter your goal",
-                                    Toast.LENGTH_LONG
-                                ).show()
                             }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(58.dp),
-                        shape = RoundedCornerShape(18.dp),
+                            .height(65.dp),
+                        shape = RoundedCornerShape(24.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF7DB9DE)
+                            containerColor = blue2
                         )
                     ) {
 
                         Text(
                             text = "Save Goal",
-                            fontSize = 17.sp,
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MainTextColor
+                            color = Color.White
                         )
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
-                        text = "Recommended: 2000ml - 3000ml daily",
-                        fontSize = 14.sp,
-                        color = MainTextColor.copy(alpha = 0.6f)
+                        text = "Healthy hydration improves focus, energy, and wellness.",
+                        color = Color.Gray,
+                        fontSize = 14.sp
                     )
                 }
             }

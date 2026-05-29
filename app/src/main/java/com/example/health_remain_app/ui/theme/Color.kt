@@ -16,3 +16,10 @@ val gray = Color(0xFF374151)
 
 
 
+
+val BlueLight = Color(0xFF005BEA)
+val BlueLight2 = Color(0xFF00C6FB)
+
+val DarkBackground = Color(0xFF121212)
+val DarkCard = Color(0xFF1E1E1E)
+val DarkText = Color(0xFFFFFFFF)
